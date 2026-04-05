@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UserRegistrationSchema, UserLoginSchema, UpdateRoleSchema, RemoveUserSchema } from "../schema";
+import { UserRegistrationSchema, UserLoginSchema, UpdateRoleSchema, RemoveUserSchema, UpdateStatusSchema } from "../schema";
 import { AuthService } from "../services";
 
 export class AuthController {
@@ -43,6 +43,9 @@ export class AuthController {
         } catch (err: any) {
             if (err.message === "Wrong email or password") {
                 return res.status(401).json({ message: err.message });
+            }
+            if (err.message === "Account is inactive") {
+                return res.status(403).json({ message: err.message });
             }
             console.error(err);
             return res.status(500).json({
@@ -113,6 +116,36 @@ export class AuthController {
         try {
             const removedUser = await AuthService.removeUser(validationResult.data);
             return res.status(200).json(removedUser);
+        } catch (err: any) {
+            if (err.message === "User not found") {
+                return res.status(404).json({ message: err.message });
+            }
+            console.error(err);
+            return res.status(500).json({
+                message: "Internal server error",
+                error: err.message || "Unknown error",
+            });
+        }
+    }
+
+    static async updateStatus(req: Request, res: Response) {
+        const validationResult = UpdateStatusSchema.safeParse(req.body);
+        if (!validationResult.success) {
+            return res.status(400).json({
+                message: "Validation error",
+                errors: validationResult.error.errors,
+            });
+        }
+
+        if (req.user.id === validationResult.data.id) {
+            return res.status(400).json({
+                message: "You cannot update your own status",
+            });
+        }
+
+        try {
+            const updatedUser = await AuthService.updateStatus(validationResult.data);
+            return res.status(200).json(updatedUser);
         } catch (err: any) {
             if (err.message === "User not found") {
                 return res.status(404).json({ message: err.message });

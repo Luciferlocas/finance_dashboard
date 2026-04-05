@@ -7,8 +7,8 @@ const router = Router();
 router.use(authenticate);
 
 router.post("/", authorize(["ADMIN"]), RecordController.createRecord);
-router.get("/", RecordController.getRecords);
-router.get("/:id", RecordController.getRecordById);
+router.get("/", authorize(["ANALYST", "ADMIN"]), RecordController.getRecords);
+router.get("/:id", authorize(["ANALYST", "ADMIN"]), RecordController.getRecordById);
 router.put("/:id", authorize(["ADMIN"]), RecordController.updateRecord);
 router.delete("/:id", authorize(["ADMIN"]), RecordController.deleteRecord);
 

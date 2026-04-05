@@ -5,7 +5,12 @@ import { authenticate, authorize } from "../middleware";
 const router = Router();
 
 router.post("/login", AuthController.login);
-router.get("/", AuthController.getAllUsers);
+router.get(
+  "/",
+  authenticate,
+  authorize(["ADMIN"]),
+  AuthController.getAllUsers
+);
 router.post(
   "/",
   authenticate,
@@ -23,6 +28,12 @@ router.delete(
   authenticate,
   authorize(["ADMIN"]),
   AuthController.removeUser
+);
+router.put(
+  "/status",
+  authenticate,
+  authorize(["ADMIN"]),
+  AuthController.updateStatus
 );
 
 export default router;
