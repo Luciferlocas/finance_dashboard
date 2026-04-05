@@ -17,9 +17,13 @@ export class AuthController {
             const newUser = await AuthService.register(validationResult.data);
             return res.status(201).json(newUser);
         } catch (err: any) {
+            if (err.message === "User already exists") {
+                return res.status(409).json({ message: err.message });
+            }
+            console.error(err);
             return res.status(500).json({
                 message: "Internal server error",
-                error: err,
+                error: err.message || "Unknown error",
             });
         }
     }
@@ -34,12 +38,16 @@ export class AuthController {
         }
 
         try {
-            const user = await AuthService.login(validationResult.data);
-            return res.status(200).json(user);
-        } catch (err) {
+            const result = await AuthService.login(validationResult.data);
+            return res.status(200).json(result);
+        } catch (err: any) {
+            if (err.message === "Wrong email or password") {
+                return res.status(401).json({ message: err.message });
+            }
+            console.error(err);
             return res.status(500).json({
                 message: "Internal server error",
-                err,
+                error: err.message || "Unknown error",
             });
         }
     }
@@ -48,10 +56,11 @@ export class AuthController {
         try {
             const users = await AuthService.getAllUsers();
             return res.status(200).json(users);
-        } catch (err) {
+        } catch (err: any) {
+            console.error(err);
             return res.status(500).json({
                 message: "Internal server error",
-                err,
+                error: err.message || "Unknown error",
             });
         }
     }
@@ -74,10 +83,14 @@ export class AuthController {
         try {
             const updatedUser = await AuthService.updateRole(validationResult.data);
             return res.status(200).json(updatedUser);
-        } catch (err) {
+        } catch (err: any) {
+            if (err.message === "User not found") {
+                return res.status(404).json({ message: err.message });
+            }
+            console.error(err);
             return res.status(500).json({
                 message: "Internal server error",
-                err,
+                error: err.message || "Unknown error",
             });
         }
     }
@@ -100,10 +113,14 @@ export class AuthController {
         try {
             const removedUser = await AuthService.removeUser(validationResult.data);
             return res.status(200).json(removedUser);
-        } catch (err) {
+        } catch (err: any) {
+            if (err.message === "User not found") {
+                return res.status(404).json({ message: err.message });
+            }
+            console.error(err);
             return res.status(500).json({
                 message: "Internal server error",
-                err,
+                error: err.message || "Unknown error",
             });
         }
     }

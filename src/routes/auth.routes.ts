@@ -9,19 +9,19 @@ router.get("/", AuthController.getAllUsers);
 router.post(
   "/",
   authenticate,
-  authorize(["admin"]),
+  authorize(["ADMIN"]),
   AuthController.register
 );
 router.put(
   "/role",
   authenticate,
-  authorize(["admin"]),
+  authorize(["ADMIN"]),
   AuthController.updateRole
 );
 router.delete(
   "/:id",
   authenticate,
-  authorize(["admin"]),
+  authorize(["ADMIN"]),
   AuthController.removeUser
 );
 
