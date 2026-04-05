@@ -9,7 +9,7 @@ export class AuthService {
       const { email, password } = userDetails;
 
       const existing = await UserCrud.findUserByEmail(email);
-      if (existing) throw new Error("Email already registered");
+      if (existing) throw new Error("User already exists");
 
       userDetails.password = await bcrypt.hash(password, 10);
       const newUser = await UserCrud.createUser(userDetails);
@@ -25,15 +25,11 @@ export class AuthService {
     try {
       const user = await UserCrud.findUserByEmail(email);
       if (!user) {
-        return {
-          message: "Wrong email or password",
-        };
+        throw new Error("Wrong email or password");
       }
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
-        return {
-          message: "Wrong email or password",
-        };
+        throw new Error("Wrong email or password");
       }
 
       const token = createJWT({
