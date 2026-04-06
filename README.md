@@ -75,6 +75,9 @@ pnpm run start
 ```
 
 ## Endpoints Map
+### API Documentation
+- `GET /docs` - Swagger UI
+
 ### Authentication & Users (`/api/user`)
 - `POST /login` - Public authentication gate.
 - `GET /` - List all system users (**Admin Only**)
