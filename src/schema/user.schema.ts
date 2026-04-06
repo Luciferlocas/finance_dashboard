@@ -21,7 +21,13 @@ export const RemoveUserSchema = UpdateRoleSchema.pick({
   id: true,
 });
 
+export const UpdateStatusSchema = z.object({
+  id: z.string(),
+  status: z.enum(["ACTIVE", "INACTIVE"]),
+});
+
 export type UserRegistrationInput = z.infer<typeof UserRegistrationSchema>;
 export type UserLoginInput = z.infer<typeof UserLoginSchema>;
 export type UpdateRoleInput = z.infer<typeof UpdateRoleSchema>;
 export type RemoveUserInput = z.infer<typeof RemoveUserSchema>;
+export type UpdateStatusInput = z.infer<typeof UpdateStatusSchema>;

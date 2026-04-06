@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { UserCrud } from "../models";
-import { UserLoginInput, UserRegistrationInput, UpdateRoleInput, RemoveUserInput } from "../schema";
+import { UserLoginInput, UserRegistrationInput, UpdateRoleInput, RemoveUserInput, UpdateStatusInput } from "../schema";
 import { createJWT } from "../helpers/auth/jwt";
 
 export class AuthService {
@@ -27,6 +27,11 @@ export class AuthService {
       if (!user) {
         throw new Error("Wrong email or password");
       }
+
+      if (user.status === "INACTIVE") {
+        throw new Error("Account is inactive");
+      }
+
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         throw new Error("Wrong email or password");
@@ -64,6 +69,20 @@ export class AuthService {
         throw new Error("User not found");
       }
       const updatedUser = await UserCrud.updateUser(id, { role });
+      return updatedUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async updateStatus(updateInfo: UpdateStatusInput) {
+    try {
+      const { id, status } = updateInfo;
+      const user = await UserCrud.findUserById(id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const updatedUser = await UserCrud.updateUser(id, { status });
       return updatedUser;
     } catch (error) {
       throw error;
